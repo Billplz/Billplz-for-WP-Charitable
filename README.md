@@ -9,7 +9,7 @@ Accept Internet Banking Payment using Billplz
 2. Upload & Install & Activate this plugin to your WordPress
 3. Go to WordPress Dashboard >> Charitable >> Settings >> Payment Gateways >> Billplz Gateway Settings
   * Gateway Label => **Billplz**
-  * **API Secret Key** => Get from **www.billplz.com** and navigate to your account settings
+  * **API Secret Key** => Get from **www.billplz.com** and navigate to your account settings
   * **X Signature Key** => Get from **www.billplz.com** and navigate to your account settings
   * **Save Changes**
 4. Done
