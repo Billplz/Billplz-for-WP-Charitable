@@ -148,10 +148,11 @@ if (!class_exists('Charitable_Gateway_Billplz')) :
          * @static
          * @since   1.0.0
          */
-        public static function process_donation($content, Charitable_Donation $donation)
+        public static function redirect_to_processing($return, $donation_id)
         {
 
             $gateway = new Charitable_Gateway_Billplz();
+            $donation = charitable_get_donation($donation_id);
             $donor = $donation->get_donor();
             $first_name = $donor->get_donor_meta('first_name');
             $last_name = $donor->get_donor_meta('last_name');
@@ -217,21 +218,10 @@ if (!class_exists('Charitable_Gateway_Billplz')) :
 
             update_option('billplz_charitable_bill_id_' . $bill_id, $donation->ID, false);
 
-            ob_start();
-
-            $content = ob_get_clean();
-
-            if (!headers_sent()) {
-                wp_redirect(esc_url_raw($bill_url));
-                return $content;
-            }
-
-            $stroutput = "Redirecting to Billplz... If you are not redirected, please click <a href=" . '"' . $bill_url . '"' . " target='_self'>Here</a><br />"
-                . "<script>location.href = '" . $bill_url . "'</script>";
-
-            echo $stroutput;
-
-            return $content;
+            return array(
+                'redirect' => $bill_url,
+                'safe' => false,
+            );
         }
 
         /**
@@ -343,21 +333,4 @@ if (!class_exists('Charitable_Gateway_Billplz')) :
     }
 
     
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
 endif; // End class_exists check

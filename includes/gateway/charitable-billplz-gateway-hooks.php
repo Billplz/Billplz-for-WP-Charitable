@@ -19,7 +19,7 @@ if (!defined('ABSPATH')) {
  *
  * @see     Charitable_Gateway_Billplz::process_donation()
  */
-add_filter('charitable_process_donation_billplz', array('Charitable_Gateway_Billplz', 'redirect_to_processing'), 10, 2);
+add_filter('charitable_process_donation_billplz', array('Charitable_Gateway_Billplz', 'redirect_to_processing'), 10, 3);
 
 
 /**
@@ -30,7 +30,7 @@ add_filter('charitable_process_donation_billplz', array('Charitable_Gateway_Bill
  *
  * @see Charitable_Gateway_Billplz::process_donation()
  */
-add_filter('charitable_processing_donation_billplz', array('Charitable_Gateway_Billplz', 'process_donation'), 10, 2);
+//add_filter('charitable_processing_donation_billplz', array('Charitable_Gateway_Billplz', 'process_donation'), 10, 2);
 
 /**
  * Check the response from Billplz after the donor has completed payment.
