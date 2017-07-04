@@ -43,3 +43,13 @@ function charitable_billplz_load() {
 }
 
 add_action( 'plugins_loaded', 'charitable_billplz_load', 1 );
+
+/*
+ *  Remove Record created by this plugin
+ */
+register_uninstall_hook(__FILE__, 'charitable_billplz_uninstall');
+function charitable_billplz_uninstall()
+{
+    global $wpdb;
+    $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE 'billplz_charitable_bill_id_%'");
+}

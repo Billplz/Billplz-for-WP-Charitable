@@ -150,6 +150,7 @@ if (!class_exists('Charitable_Gateway_Billplz')) :
          */
         public static function process_donation($content, Charitable_Donation $donation)
         {
+
             $gateway = new Charitable_Gateway_Billplz();
             $donor = $donation->get_donor();
             $first_name = $donor->get_donor_meta('first_name');
@@ -157,16 +158,41 @@ if (!class_exists('Charitable_Gateway_Billplz')) :
             $name = $first_name . ' ' . $last_name;
             $email = $donor->get_donor_meta('email');
             $mobile = $donor->get_donor_meta('phone');
-            $reference_1 = $donation->ID;
-            $reference_1_label = 'ID';
-            //$reference_2 = $donation->get_donation_key();
-            //$reference_2_label = 'KEY';
+            $reference_1 = '';
+            $reference_1_label = '';
+            $reference_2 = '';
+            $reference_2_label = '';
             $amount = $donation->get_total_donation_amount(true);
             $description = sprintf(__('Donation %d', 'charitable-billplz'), $donation->ID);
             $keys = $gateway->get_keys();
             $api_key = $keys['api_key'];
             $collection_id = $keys['collection_id'];
             $deliver = $keys['send_bills'];
+
+            /*
+             * Support for Advance Billplz for WP Charitable Plugin
+             */
+
+            $campaign_donations = $donation->get_campaign_donations();
+            foreach ($campaign_donations as $key => $value) {
+                if (!empty($value->campaign_id)) {
+                    $post_id = $value->campaign_id;
+                    break;
+                }
+            }
+
+            if (class_exists('AdvanceBFC')) {
+                $post = get_post((int) $post_id);
+                $campaign = new Charitable_Campaign($post);
+                $api_key = empty($campaign->get('billplz_api_key')) ? $api_key : $campaign->get('billplz_api_key');
+                $collection_id = empty($campaign->get('billplz_collection_id')) ? $collection_id : $campaign->get('billplz_collection_id');
+                $description = empty($campaign->get('billplz_description')) ? $description : $campaign->get('billplz_description');
+                $deliver = empty($campaign->get('billplz_send_bill')) ? $deliver : $campaign->get('billplz_send_bill');
+                $reference_1_label = empty($campaign->get('billplz_reference_1_label')) ? $reference_1_label : $campaign->get('billplz_reference_1_label');
+                $reference_1 = empty($campaign->get('billplz_reference_1')) ? $reference_1 : $campaign->get('billplz_reference_1');
+                $reference_2_label = empty($campaign->get('billplz_reference_2_label')) ? $reference_2_label : $campaign->get('billplz_reference_2_label');
+                $reference_2 = empty($campaign->get('billplz_reference_2')) ? $reference_2 : $campaign->get('billplz_reference_2');
+            }
 
             $ipn_url = Charitable_Gateway_Billplz_IPN_Listener::get_listener_url();
 
@@ -182,22 +208,26 @@ if (!class_exists('Charitable_Gateway_Billplz')) :
                 ->setPassbackURL($ipn_url, $ipn_url)
                 ->setReference_1($reference_1)
                 ->setReference_1_Label($reference_1_label)
-                //->setReference_2($reference_2)
-                //->setReference_2_Label($reference_2_label)
+                ->setReference_2($reference_2)
+                ->setReference_2_Label($reference_2_label)
                 ->create_bill(true);
 
             $bill_url = $billplz->getURL();
+            $bill_id = $billplz->getID();
+
+            update_option('billplz_charitable_bill_id_' . $bill_id, $donation->ID, false);
+
             ob_start();
-            
+
             $content = ob_get_clean();
-            
+
             if (!headers_sent()) {
                 wp_redirect(esc_url_raw($bill_url));
                 return $content;
-            } 
-            
+            }
+
             $stroutput = "Redirecting to Billplz... If you are not redirected, please click <a href=" . '"' . $bill_url . '"' . " target='_self'>Here</a><br />"
-                        . "<script>location.href = '" . $bill_url . "'</script>";
+                . "<script>location.href = '" . $bill_url . "'</script>";
 
             echo $stroutput;
 
@@ -252,30 +282,30 @@ if (!class_exists('Charitable_Gateway_Billplz')) :
 
             ?>
             <script>
-                        (function ($) {
-                            $('[data-change-currency-to-myr]').on('click', function () {
-                                var $this = $(this);
+                (function ($) {
+                    $('[data-change-currency-to-myr]').on('click', function () {
+                        var $this = $(this);
 
-                                $.ajax({
-                                    type: "POST",
-                                    data: {
-                                        action: 'charitable_change_currency_to_myr',
-                                        _nonce: "<?php echo wp_create_nonce('billplz_currency_change') ?>"
-                                    },
-                                    url: ajaxurl,
-                                    success: function (response) {
-                                        console.log(response);
+                        $.ajax({
+                            type: "POST",
+                            data: {
+                                action: 'charitable_change_currency_to_myr',
+                                _nonce: "<?php echo wp_create_nonce('billplz_currency_change') ?>"
+                            },
+                            url: ajaxurl,
+                            success: function (response) {
+                                console.log(response);
 
-                                        if (response.success) {
-                                            $this.parents('.notice').first().slideUp();
-                                        }
-                                    },
-                                    error: function (response) {
-                                        console.log(response);
-                                    }
-                                });
-                            })
-                        })(jQuery);
+                                if (response.success) {
+                                    $this.parents('.notice').first().slideUp();
+                                }
+                            },
+                            error: function (response) {
+                                console.log(response);
+                            }
+                        });
+                    })
+                })(jQuery);
             </script>
             <?php
             return ob_get_clean();
@@ -311,6 +341,16 @@ if (!class_exists('Charitable_Gateway_Billplz')) :
             new Charitable_Gateway_Billplz_IPN_Listener;
         }
     }
+
+    
+
+    
+
+    
+
+    
+
+    
 
     
 

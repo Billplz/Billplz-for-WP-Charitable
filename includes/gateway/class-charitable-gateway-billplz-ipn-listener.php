@@ -45,6 +45,32 @@ if (!class_exists('Charitable_Gateway_Billplz_IPN_Listener')) {
             $api_key = $keys['api_key'];
             $x_sign = $keys['x_signature'];
 
+            /*
+             * Support for Advance Billplz for WP Charitable Plugin
+             */
+            $bill_id = htmlspecialchars(isset($_GET['billplz']['id']) ? $_GET['billplz']['id'] : $_POST['id']);
+            $donation_id = get_option('billplz_charitable_bill_id_' . $bill_id, false);
+            if (!$donation_id) {
+                exit;
+            }
+            
+            $donation = charitable_get_donation((int) $donation_id);
+            //$donation_key = $moreData['reference_2'];
+
+            $campaign_donations = $donation->get_campaign_donations();
+            foreach ($campaign_donations as $key => $value) {
+                if (!empty($value->campaign_id)) {
+                    $post_id = $value->campaign_id;
+                    break;
+                }
+            }
+            if (class_exists('AdvanceBFC')) {
+                $post = get_post((int) $post_id);
+                $campaign = new Charitable_Campaign($post);
+                $api_key = empty($campaign->get('billplz_api_key')) ? $api_key : $campaign->get('billplz_api_key');
+                $x_sign = empty($campaign->get('billplz_x_signature')) ? $x_sign : $campaign->get('billplz_x_signature');
+            }
+
             if (isset($_GET['billplz']['id'])) {
                 $data = Billplz::getRedirectData($x_sign);
             } else {
@@ -55,18 +81,14 @@ if (!class_exists('Charitable_Gateway_Billplz_IPN_Listener')) {
             $billplz = new Billplz($api_key);
             $moreData = $billplz->check_bill($data['id']);
 
-            $donation_id = $moreData['reference_1'];
-            $donation = charitable_get_donation($donation_id);
-            //$donation_key = $moreData['reference_2'];
-
             if ($data['paid']) {
 
                 /* If the donation had already been marked as complete, stop here. */
                 if ('charitable-completed' != get_post_status($donation_id)) {
                     $paid_time = $billplz->get_bill_paid_time($data['id']);
                     $message = sprintf('%s: %s', __('Billplz Bill ID', 'charitable'), $data['id']);
-                    $message.= '<br>Bill URL: '. $moreData['url'];
-                    $message.= '<br>Payment Date: '.  gmdate('d-m-Y H:i:s', $paid_time);
+                    $message .= '<br>Bill URL: ' . $moreData['url'];
+                    $message .= '<br>Payment Date: ' . gmdate('d-m-Y H:i:s', $paid_time);
                     $donation->update_donation_log($message);
                     $donation->update_status('charitable-completed');
                 }
@@ -92,7 +114,7 @@ if (!class_exists('Charitable_Gateway_Billplz_IPN_Listener')) {
                             'cancel' => true,
                                 ), wp_get_referer()));
                     }
-                    header('Location: '. $cancel_url);
+                    header('Location: ' . $cancel_url);
                 }
                 exit;
             } else {
