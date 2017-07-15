@@ -11,7 +11,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-if (!class_exists('Charitable_Gateway_Billplz')) :
+if (!class_exists('Charitable_Gateway_Billplz')) {
 
     /**
      * Billplz Gateway
@@ -330,7 +330,116 @@ if (!class_exists('Charitable_Gateway_Billplz')) :
         {
             new Charitable_Gateway_Billplz_IPN_Listener;
         }
+        /*
+         * Add option to hide some element that not required by Billplz API
+         */
+
+        public static function add_billplz_fields($field)
+        {
+            $general_fields = array(
+                'section_pages' => array(
+                    'title' => __('Billplz for WP Charitable', 'charitable'),
+                    'type' => 'heading',
+                    'priority' => 50,
+                ),
+                'billplz_full_name' => array(
+                    'title' => __('Replace First & Last Name with Full Name', 'charitable'),
+                    'type' => 'checkbox',
+                    'help' => 'Use Malaysian Style Naming',
+                    'priority' => 60,
+                ),
+                'billplz_rem_add' => array(
+                    'title' => __('Remove Address 1 & 2 Field', 'charitable'),
+                    'type' => 'checkbox',
+                    'help' => 'Remove Address Field on Payment',
+                    'priority' => 70,
+                ),
+                'billplz_rem_city' => array(
+                    'title' => __('Remove City Field', 'charitable'),
+                    'type' => 'checkbox',
+                    'help' => 'Remove City Field on Payment',
+                    'priority' => 80,
+                ),
+                'billplz_rem_state' => array(
+                    'title' => __('Remove State Field', 'charitable'),
+                    'type' => 'checkbox',
+                    'help' => 'Remove State Field on Payment',
+                    'priority' => 90,
+                ),
+                'billplz_rem_postcode' => array(
+                    'title' => __('Remove Postcode Field', 'charitable'),
+                    'type' => 'checkbox',
+                    'help' => 'Remove Postcode Field on Payment',
+                    'priority' => 100,
+                ),
+                'billplz_rem_country' => array(
+                    'title' => __('Remove Country Field', 'charitable'),
+                    'type' => 'checkbox',
+                    'help' => 'Remove Country Field on Payment',
+                    'priority' => 110,
+                ),
+                'billplz_mak_phone' => array(
+                    'title' => __('Phone Required', 'charitable'),
+                    'type' => 'checkbox',
+                    'help' => 'Make Phone Fields Mandatory to be set',
+                    'priority' => 120,
+                ),
+                'billplz_unr_email' => array(
+                    'title' => __('Unrequire Email', 'charitable'),
+                    'type' => 'checkbox',
+                    'help' => 'Make Email Fields Optional to be set. NOT RECOMMENDED',
+                    'priority' => 120,
+                ),
+            );
+            $field = array_merge($field, $general_fields);
+            return $field;
+        }
+
+        public static function remove_unrequired_fields($fields)
+        {
+
+            $full_name = charitable_get_option('billplz_full_name', false);
+            $address = charitable_get_option('billplz_rem_add', false);
+            $city = charitable_get_option('billplz_rem_city', false);
+            $state = charitable_get_option('billplz_rem_state', false);
+            $postcode = charitable_get_option('billplz_rem_postcode', false);
+            $country = charitable_get_option('billplz_rem_country', false);
+            $phone = charitable_get_option('billplz_mak_phone', false);
+            $email = charitable_get_option('billplz_unr_email', false);
+
+            if ($full_name) {
+                unset($fields['last_name']);
+                $fields['first_name']['label'] = __('Name', 'charitable');
+            }
+
+            if ($address) {
+                unset($fields['address']);
+                unset($fields['address_2']);
+            }
+
+            if ($city) {
+                unset($fields['city']);
+            }
+            if ($state) {
+                unset($fields['state']);
+            }
+            if ($postcode) {
+                unset($fields['postcode']);
+            }
+            if ($country) {
+                unset($fields['country']);
+            }
+
+            if ($phone) {
+                $fields['phone']['required'] = true;
+            }
+
+            if ($email) {
+                $fields['email']['required'] = false;
+            }
+
+            return $fields;
+        }
     }
 
-    
-endif; // End class_exists check
+} // End class_exists check

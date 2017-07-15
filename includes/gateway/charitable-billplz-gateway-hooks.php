@@ -21,6 +21,11 @@ if (!defined('ABSPATH')) {
  */
 add_filter('charitable_process_donation_billplz', array('Charitable_Gateway_Billplz', 'redirect_to_processing'), 10, 3);
 
+/**
+ * Remove the options according to the user settings
+ */
+add_filter('charitable_donation_form_user_fields', array('Charitable_Gateway_Billplz', 'remove_unrequired_fields'));
+
 
 /**
  * Render the Billplz donation processing page content.
@@ -51,4 +56,10 @@ add_action('wp_ajax_charitable_change_currency_to_myr', array('Charitable_Gatewa
  *
  * @see     charitable_ipn_listener()
  */
-add_action( 'init', array('Charitable_Gateway_Billplz','ipn_listener') );
+add_action('init', array('Charitable_Gateway_Billplz', 'ipn_listener'));
+
+/**
+ * Add settings to the General tab.
+ *
+ */
+add_filter('charitable_settings_tab_fields_general', array('Charitable_Gateway_Billplz', 'add_billplz_fields'), 6);
