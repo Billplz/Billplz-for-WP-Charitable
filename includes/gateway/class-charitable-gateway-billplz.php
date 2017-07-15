@@ -86,14 +86,16 @@ if (!class_exists('Charitable_Gateway_Billplz')) {
                 'type' => 'text',
                 'title' => __('API Secret Key', 'charitable-billplz'),
                 'priority' => 6,
-                'help' => 'Enter your Billplz API Key. Get this key from Billplz >> Settings'
+                'help' => 'Enter your Billplz API Key. Get this key from Billplz >> Settings',
+                'required' => true,
             );
 
             $settings['x_signature'] = array(
                 'type' => 'text',
                 'title' => __('X Signature Key', 'charitable-billplz'),
                 'priority' => 8,
-                'help' => 'Enter your Billplz X Signature Key. Get this key from Billplz >> Settings'
+                'help' => 'Enter your Billplz X Signature Key. Get this key from Billplz >> Settings',
+                'required' => true,
             );
 
             $settings['collection_id'] = array(
@@ -117,6 +119,37 @@ if (!class_exists('Charitable_Gateway_Billplz')) {
                 'help' => 'We recommend "Do not Send" option',
             );
 
+            $settings['description'] = array(
+                'type' => 'text',
+                'title' => __('Custom Description', 'charitable-billplz'),
+                'priority' => 13,
+                'help' => 'This is field is Optional. Leave blank if unsure'
+            );
+            $settings['reference_1_label'] = array(
+                'type' => 'text',
+                'title' => __('Reference 1 Label', 'charitable-billplz'),
+                'priority' => 13,
+                'help' => 'This is field is Optional. Leave blank if unsure'
+            );
+            $settings['reference_1'] = array(
+                'type' => 'text',
+                'title' => __('Reference 1', 'charitable-billplz'),
+                'priority' => 13,
+                'help' => 'This is field is Optional. Leave blank if unsure'
+            );
+            $settings['reference_2_label'] = array(
+                'type' => 'text',
+                'title' => __('Reference 2 Label', 'charitable-billplz'),
+                'priority' => 13,
+                'help' => 'This is field is Optional. Leave blank if unsure'
+            );
+            $settings['reference_2'] = array(
+                'type' => 'text',
+                'title' => __('Reference 2', 'charitable-billplz'),
+                'priority' => 13,
+                'help' => 'This is field is Optional. Leave blank if unsure'
+            );
+
             return $settings;
         }
 
@@ -133,7 +166,12 @@ if (!class_exists('Charitable_Gateway_Billplz')) {
                 'api_key' => trim($this->get_value('api_key')),
                 'x_signature' => trim($this->get_value('x_signature')),
                 'collection_id' => trim($this->get_value('collection_id')),
-                'send_bills' => trim($this->get_value('send_bills'))
+                'send_bills' => trim($this->get_value('send_bills')),
+                'description' => trim($this->get_value('description')),
+                'reference_1_label' => trim($this->get_value('reference_1_label')),
+                'reference_1' => trim($this->get_value('reference_1')),
+                'reference_2_label' => trim($this->get_value('reference_2_label')),
+                'reference_2' => trim($this->get_value('reference_2')),
             ];
 
             return $keys;
@@ -153,48 +191,50 @@ if (!class_exists('Charitable_Gateway_Billplz')) {
 
             $gateway = new Charitable_Gateway_Billplz();
             $donation = charitable_get_donation($donation_id);
+            /*
+             * Support for Advance Billplz for WP Charitable Plugin
+             */
+            $campaign_donations = $donation->get_campaign_donations();
+            foreach ($campaign_donations as $key => $value) {
+                if (!empty($value->campaign_id)) {
+                    $post_id = $value->campaign_id;
+                    $post = get_post((int) $post_id);
+                    $campaign = new Charitable_Campaign($post);
+                    break;
+                }
+            }
+
             $donor = $donation->get_donor();
             $first_name = $donor->get_donor_meta('first_name');
             $last_name = $donor->get_donor_meta('last_name');
             $name = $first_name . ' ' . $last_name;
             $email = $donor->get_donor_meta('email');
             $mobile = $donor->get_donor_meta('phone');
-            $reference_1 = '';
-            $reference_1_label = '';
-            $reference_2 = '';
-            $reference_2_label = '';
             $amount = $donation->get_total_donation_amount(true);
-            $description = sprintf(__('Donation %d', 'charitable-billplz'), $donation->ID);
+
             $keys = $gateway->get_keys();
-            $api_key = $keys['api_key'];
-            $collection_id = $keys['collection_id'];
-            $deliver = $keys['send_bills'];
+
+            /**
+             * If the admin has set Custom Description, use it
+             */
+            if (!empty($keys['description'])) {
+                $raw_description = $keys['description'];
+            } else {
+                $raw_description = sprintf(__('Donation %d', 'charitable-billplz'), $donation->ID);
+            }
 
             /*
-             * Support for Advance Billplz for WP Charitable Plugin
+             * The filter use it to get api key from campaign meta key
+             * Example: empty($campaign->get('billplz_api_key')) ? $api_key : $campaign->get('billplz_api_key');
              */
-
-            $campaign_donations = $donation->get_campaign_donations();
-            foreach ($campaign_donations as $key => $value) {
-                if (!empty($value->campaign_id)) {
-                    $post_id = $value->campaign_id;
-                    break;
-                }
-            }
-
-            if (class_exists('AdvanceBFC')) {
-                $post = get_post((int) $post_id);
-                $campaign = new Charitable_Campaign($post);
-                $api_key = empty($campaign->get('billplz_api_key')) ? $api_key : $campaign->get('billplz_api_key');
-                $collection_id = empty($campaign->get('billplz_collection_id')) ? $collection_id : $campaign->get('billplz_collection_id');
-                $description = empty($campaign->get('billplz_description')) ? $description : $campaign->get('billplz_description');
-                $deliver = empty($campaign->get('billplz_send_bill')) ? $deliver : $campaign->get('billplz_send_bill');
-                $reference_1_label = empty($campaign->get('billplz_reference_1_label')) ? $reference_1_label : $campaign->get('billplz_reference_1_label');
-                $reference_1 = empty($campaign->get('billplz_reference_1')) ? $reference_1 : $campaign->get('billplz_reference_1');
-                $reference_2_label = empty($campaign->get('billplz_reference_2_label')) ? $reference_2_label : $campaign->get('billplz_reference_2_label');
-                $reference_2 = empty($campaign->get('billplz_reference_2')) ? $reference_2 : $campaign->get('billplz_reference_2');
-            }
-
+            $api_key = apply_filters('billplz_for_wp_charitable_api_key', $keys['api_key'], $campaign);
+            $collection_id = apply_filters('billplz_for_wp_charitable_collection_id', $keys['collection_id'], $campaign);
+            $deliver = apply_filters('billplz_for_wp_charitable_deliver', $keys['send_bills'], $campaign);
+            $description = apply_filters('billplz_for_wp_charitable_description', $raw_description, $campaign);
+            $reference_1_label = apply_filters('billplz_for_wp_charitable_reference_1_label', $keys['reference_1_label'], $campaign);
+            $reference_1 = apply_filters('billplz_for_wp_charitable_reference_1', $keys['reference_1'], $campaign);
+            $reference_2_label = apply_filters('billplz_for_wp_charitable_reference_2_label', $keys['reference_2_label'], $campaign);
+            $reference_2 = apply_filters('billplz_for_wp_charitable_reference_2', $keys['reference_2'], $campaign);
             $ipn_url = Charitable_Gateway_Billplz_IPN_Listener::get_listener_url();
 
             $billplz = new Billplz($api_key);
