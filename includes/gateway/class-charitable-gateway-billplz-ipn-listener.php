@@ -42,8 +42,6 @@ if (!class_exists('Charitable_Gateway_Billplz_IPN_Listener')) {
         {
             $gateway = new Charitable_Gateway_Billplz();
             $keys = $gateway->get_keys();
-            $api_key = $keys['api_key'];
-            $x_sign = $keys['x_signature'];
 
             /*
              * Support for Advance Billplz for WP Charitable Plugin
@@ -53,7 +51,7 @@ if (!class_exists('Charitable_Gateway_Billplz_IPN_Listener')) {
             if (!$donation_id) {
                 exit;
             }
-            
+
             $donation = charitable_get_donation((int) $donation_id);
             //$donation_key = $moreData['reference_2'];
 
@@ -61,15 +59,13 @@ if (!class_exists('Charitable_Gateway_Billplz_IPN_Listener')) {
             foreach ($campaign_donations as $key => $value) {
                 if (!empty($value->campaign_id)) {
                     $post_id = $value->campaign_id;
+                    $post = get_post((int) $post_id);
+                    $campaign = new Charitable_Campaign($post);
                     break;
                 }
             }
-            if (class_exists('AdvanceBFC')) {
-                $post = get_post((int) $post_id);
-                $campaign = new Charitable_Campaign($post);
-                $api_key = empty($campaign->get('billplz_api_key')) ? $api_key : $campaign->get('billplz_api_key');
-                $x_sign = empty($campaign->get('billplz_x_signature')) ? $x_sign : $campaign->get('billplz_x_signature');
-            }
+            $api_key = apply_filters('billplz_for_wp_charitable_api_key', $keys['api_key'], $post, $campaign);
+            $x_sign = apply_filters('billplz_for_wp_charitable_x_signature', $keys['x_signature'], $post, $campaign);
 
             if (isset($_GET['billplz']['id'])) {
                 $data = Billplz::getRedirectData($x_sign);
