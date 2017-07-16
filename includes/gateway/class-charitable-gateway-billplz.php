@@ -377,7 +377,7 @@ if (!class_exists('Charitable_Gateway_Billplz')) {
         public static function add_billplz_fields($field)
         {
             $general_fields = array(
-                'section_pages' => array(
+                'billplz_section_pages' => array(
                     'title' => __('Billplz for WP Charitable', 'charitable'),
                     'type' => 'heading',
                     'priority' => 50,
