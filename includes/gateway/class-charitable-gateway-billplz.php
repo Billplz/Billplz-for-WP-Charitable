@@ -227,14 +227,14 @@ if (!class_exists('Charitable_Gateway_Billplz')) {
              * The filter use it to get api key from campaign meta key
              * Example: empty($campaign->get('billplz_api_key')) ? $api_key : $campaign->get('billplz_api_key');
              */
-            $api_key = apply_filters('billplz_for_wp_charitable_api_key', $keys['api_key'], $campaign);
-            $collection_id = apply_filters('billplz_for_wp_charitable_collection_id', $keys['collection_id'], $campaign);
-            $deliver = apply_filters('billplz_for_wp_charitable_deliver', $keys['send_bills'], $campaign);
-            $description = apply_filters('billplz_for_wp_charitable_description', $raw_description, $campaign);
-            $reference_1_label = apply_filters('billplz_for_wp_charitable_reference_1_label', $keys['reference_1_label'], $campaign);
-            $reference_1 = apply_filters('billplz_for_wp_charitable_reference_1', $keys['reference_1'], $campaign);
-            $reference_2_label = apply_filters('billplz_for_wp_charitable_reference_2_label', $keys['reference_2_label'], $campaign);
-            $reference_2 = apply_filters('billplz_for_wp_charitable_reference_2', $keys['reference_2'], $campaign);
+            $api_key = apply_filters('billplz_for_wp_charitable_api_key', $keys['api_key'], $post, $campaign);
+            $collection_id = apply_filters('billplz_for_wp_charitable_collection_id', $keys['collection_id'], $post, $campaign);
+            $deliver = apply_filters('billplz_for_wp_charitable_deliver', $keys['send_bills'], $post, $campaign);
+            $description = apply_filters('billplz_for_wp_charitable_description', $raw_description, $post, $campaign);
+            $reference_1_label = apply_filters('billplz_for_wp_charitable_reference_1_label', $keys['reference_1_label'], $post, $campaign);
+            $reference_1 = apply_filters('billplz_for_wp_charitable_reference_1', $keys['reference_1'], $post, $campaign);
+            $reference_2_label = apply_filters('billplz_for_wp_charitable_reference_2_label', $keys['reference_2_label'], $post, $campaign);
+            $reference_2 = apply_filters('billplz_for_wp_charitable_reference_2', $keys['reference_2'], $post, $campaign);
             $ipn_url = Charitable_Gateway_Billplz_IPN_Listener::get_listener_url();
 
             $billplz = new Billplz($api_key);
