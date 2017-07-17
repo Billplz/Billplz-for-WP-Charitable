@@ -195,9 +195,11 @@ if (!class_exists('Charitable_Gateway_Billplz')) {
              * Support for Advance Billplz for WP Charitable Plugin
              */
             $campaign_donations = $donation->get_campaign_donations();
+            
             foreach ($campaign_donations as $key => $value) {
                 if (!empty($value->campaign_id)) {
                     $post_id = $value->campaign_id;
+                    $campaign_name = $value->campaign_name;
                     $post = get_post((int) $post_id);
                     $campaign = new Charitable_Campaign($post);
                     break;
@@ -220,7 +222,8 @@ if (!class_exists('Charitable_Gateway_Billplz')) {
             if (!empty($keys['description'])) {
                 $raw_description = $keys['description'];
             } else {
-                $raw_description = sprintf(__('Donation %d', 'charitable-billplz'), $donation->ID);
+                //$raw_description = sprintf(__('Donation %d', 'charitable-billplz'), $donation->ID);
+                $raw_description = $campaign_name;
             }
 
             /*
