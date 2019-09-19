@@ -118,7 +118,7 @@ if (!class_exists('Billplz')) {
                 'email' => isset($_POST['email']) ? $_POST['email'] : '',
                 'id' => isset($_POST['id']) ? $_POST['id'] : self::throwException('Billplz ID is not supplied'),
                 'mobile' => isset($_POST['mobile']) ? $_POST['mobile'] : '',
-                'name' => isset($_POST['name']) ? $_POST['name'] : self::throwException('Payer Name is not supplied'),
+                'name' => isset($_POST['name']) ? stripslashes($_POST['name']) : self::throwException('Payer Name is not supplied'),
                 'paid_amount' => isset($_POST['paid_amount']) ? $_POST['paid_amount'] : '',
                 'paid_at' => isset($_POST['paid_at']) ? $_POST['paid_at'] : '',
                 'paid' => isset($_POST['paid']) ? $_POST['paid'] : self::throwException('Paid status is not supplied'),
