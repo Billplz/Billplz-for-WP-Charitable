@@ -1,24 +1,27 @@
 # Billplz for WP Charitable
 
-Accept Internet Banking Payment using Billplz
+Accept payment using Billplz.
 
-# Installation
+## Installation
 
-0. Ensure WP Charitable currency is set to **Ringgit Malaysia** (**MYR**)
-1. Download Plugin: https://codeload.github.com/wzul/Billplz-for-WP-Charitable/zip/master
-2. **Upload** & **Install** & **Activate** this plugin to your WordPress
-3. Go to WordPress **Dashboard** >> **Charitable** >> **Settings** >> **Payment Gateways** >> **Billplz Gateway Settings**
+### Prerequisite
+
+- Ensure WP Charitable currency is set to **Ringgit Malaysia** (**MYR**)
+
+### Manual Installation
+
+- Download: https://github.com/Billplz/Billplz-for-WP-Charitable/archive/master.zip
+- **Upload** & **Install** & **Activate** this plugin to your WordPress
+- 
+
+## Configuration
+- Go to WordPress **Dashboard** >> **Charitable** >> **Settings** >> **Payment Gateways** >> **Billplz Gateway Settings**
   * Gateway Label => **Billplz**
   * **API Secret Key** => Get from **www.billplz.com** and navigate to your account settings
+  * **Collection ID** => Get from **www.billplz.com** and navigate to your billing page
   * **X Signature Key** => Get from **www.billplz.com** and navigate to your account settings
   * **Save Changes**
-4. Done
 
-# Compatibility
+## Other
 
-1. Compatible with **PHP 5.6/7.0**
-2. WordPress (Self-Hosted) with **WP Charitable Plugins**
-
-# Other
-
-Please open an issue or email to wan@wanzul-hosting.com
+Facebook: [Billplz Dev Jam](https://www.facebook.com/groups/billplzdevjam/)

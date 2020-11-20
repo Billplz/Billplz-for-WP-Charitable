@@ -1,13 +1,15 @@
 <?php
 /**
  * Plugin Name: Billplz for WP Charitable
- * Plugin URI: https://github.com/wzul/billplz-for-wp-charitable
- * Description: Billplz Payment Gateway | Accept Payment using all participating FPX Banking Channels. <a href="https://www.billplz.com/join/8ant7x743awpuaqcxtqufg" target="_blank">Sign up Now</a>.
- * Author: Wanzul Hosting Enterprise
- * Author URI: http://www.wanzul-hosting.com/
- * Version: 3.1
+ * Plugin URI: https://github.com/Billplz/billplz-for-wp-charitable
+ * Description: Billplz. Fair payment platform.
+ * Author: Billplz Sdn Bhd
+ * Author URI: http://www.billplz.com/
+ * Version: 3.2.0
+ * Requires PHP: 7.0
  * License: GPLv3
  * Domain Path: /languages/
+ * Text Domain: chbillplz
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
@@ -26,7 +28,7 @@ function charitable_billplz_load() {
 
 		if ( ! class_exists( 'Charitable_Extension_Activation' ) ) {
 
-			require_once 'includes/class-charitable-extension-activation.php';
+			require_once 'includes/activation.php';
 
 		}
 
@@ -44,12 +46,11 @@ function charitable_billplz_load() {
 
 add_action( 'plugins_loaded', 'charitable_billplz_load', 1 );
 
-/*
- *  Remove Record created by this plugin
- */
-register_uninstall_hook(__FILE__, 'charitable_billplz_uninstall');
-function charitable_billplz_uninstall()
-{
-    global $wpdb;
-    $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE 'billplz_charitable_bill_id_%'");
+function ch_billplz_db_migration() {
+	require_once( 'includes/models/billplz-db.php' );
+
+	$billplz_db = new ChBillplzDb();
+  $billplz_db->migrate();
 }
+
+register_activation_hook(__FILE__, 'ch_billplz_db_migration');
