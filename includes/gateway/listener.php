@@ -83,6 +83,7 @@ if (!class_exists('Charitable_Gateway_Billplz_Listener')) {
                     $message .= '<br>Bill ID: ' . $data['id'];
                     $message .= '<br>Transaction ID: ' . $transaction_id;
                     $message .= '<br>Donation ID: ' . $donation_id;
+                    $message .= '<br>Type: ' . $data['type'];
                     $donation->update_donation_log($message);
                     $donation->update_status('charitable-completed');
                 }
