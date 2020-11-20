@@ -50,11 +50,15 @@ if (!class_exists('Charitable_Gateway_Billplz_Listener')) {
 
             $billplz_model = new ChBillplz();
             $payment_row = $billplz_model->get_payment_by_bill_id($bill_id);
-            if (!$payment_row) {
-                exit('No record found');
+            if ($payment_row) {
+                $donation_id = $payment_row->donation_id;
+            } else {
+                // This to ensure backward compatibility of Billplz for WP Charitable
+                // where donation id is stored in option table.
+                if (!$donation_id = get_option('billplz_charitable_bill_id_' . $bill_id, false)){
+                  exit('No record found');
+                }
             }
-
-            $donation_id = $payment_row->donation_id;
             
             $donation = charitable_get_donation((int) $donation_id);
 
