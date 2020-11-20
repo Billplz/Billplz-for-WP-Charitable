@@ -74,6 +74,7 @@ if (!class_exists('Charitable_Gateway_Billplz_Listener')) {
 
             $is_sandbox = charitable_get_option( 'test_mode' ) ? 'yes' : 'no';
             $transaction_id = isset($data['transaction_id']) ? $data['transaction_id'] : '';
+            $transaction_status = isset($data['transaction_status']) ? $data['transaction_status'] : '';
 
             if ($data['paid']) {
                 /* If the donation had already been marked as complete, stop here. */
@@ -89,7 +90,7 @@ if (!class_exists('Charitable_Gateway_Billplz_Listener')) {
                 /*
                  * Prevent completed order marked as failed for unpaid bills
                  */
-                $message = sprintf('%s: %s', __('The donation has failed with the following state', 'charitable'), $moreData['state']);
+                $message = sprintf('%s: %s', __('The donation has failed with the following state', 'chbillplz'), $transaction_status);
                 $donation->update_donation_log($message);
                 $donation->update_status('charitable-failed');
             }

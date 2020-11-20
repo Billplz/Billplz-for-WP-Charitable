@@ -47,9 +47,9 @@ function charitable_billplz_load() {
 add_action( 'plugins_loaded', 'charitable_billplz_load', 1 );
 
 function ch_billplz_db_migration() {
-	require_once( 'includes/models/billplz-db.php' );
+  require_once( 'includes/models/billplz-db.php' );
 
-	$billplz_db = new ChBillplzDb();
+  $billplz_db = new ChBillplzDb();
   $billplz_db->migrate();
 }
 

@@ -287,54 +287,54 @@ if (!class_exists('Charitable_Gateway_Billplz')) {
         {
             $general_fields = array(
                 'billplz_section_pages' => array(
-                    'title' => __('Billplz Options', 'charitable'),
+                    'title' => __('Billplz Options', 'chbillplz'),
                     'type' => 'heading',
                     'priority' => 50,
                 ),
                 'billplz_full_name' => array(
-                    'title' => __('Replace First & Last Name with Full Name', 'charitable'),
+                    'title' => __('Replace First & Last Name with Full Name', 'chbillplz'),
                     'type' => 'checkbox',
                     'help' => 'Use Malaysian Style Naming',
                     'priority' => 60,
                 ),
                 'billplz_rem_add' => array(
-                    'title' => __('Remove Address 1 & 2 Field', 'charitable'),
+                    'title' => __('Remove Address 1 & 2 Field', 'chbillplz'),
                     'type' => 'checkbox',
                     'help' => 'Remove Address Field on Payment',
                     'priority' => 70,
                 ),
                 'billplz_rem_city' => array(
-                    'title' => __('Remove City Field', 'charitable'),
+                    'title' => __('Remove City Field', 'chbillplz'),
                     'type' => 'checkbox',
                     'help' => 'Remove City Field on Payment',
                     'priority' => 80,
                 ),
                 'billplz_rem_state' => array(
-                    'title' => __('Remove State Field', 'charitable'),
+                    'title' => __('Remove State Field', 'chbillplz'),
                     'type' => 'checkbox',
                     'help' => 'Remove State Field on Payment',
                     'priority' => 90,
                 ),
                 'billplz_rem_postcode' => array(
-                    'title' => __('Remove Postcode Field', 'charitable'),
+                    'title' => __('Remove Postcode Field', 'chbillplz'),
                     'type' => 'checkbox',
                     'help' => 'Remove Postcode Field on Payment',
                     'priority' => 100,
                 ),
                 'billplz_rem_country' => array(
-                    'title' => __('Remove Country Field', 'charitable'),
+                    'title' => __('Remove Country Field', 'chbillplz'),
                     'type' => 'checkbox',
                     'help' => 'Remove Country Field on Payment',
                     'priority' => 110,
                 ),
                 'billplz_mak_phone' => array(
-                    'title' => __('Phone Required', 'charitable'),
+                    'title' => __('Phone Required', 'chbillplz'),
                     'type' => 'checkbox',
                     'help' => 'Make Phone Fields Mandatory to be set',
                     'priority' => 120,
                 ),
                 'billplz_unr_email' => array(
-                    'title' => __('Unrequire Email', 'charitable'),
+                    'title' => __('Unrequire Email', 'chbillplz'),
                     'type' => 'checkbox',
                     'help' => 'Make Email Fields Optional to be set. NOT RECOMMENDED',
                     'priority' => 130,
@@ -358,7 +358,7 @@ if (!class_exists('Charitable_Gateway_Billplz')) {
 
             if ($full_name) {
                 unset($fields['last_name']);
-                $fields['first_name']['label'] = __('Name', 'charitable');
+                $fields['first_name']['label'] = __('Name', 'chbillplz');
             }
 
             if ($address) {

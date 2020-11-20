@@ -40,10 +40,10 @@ if ( ! class_exists( 'Charitable_Billplz' ) ) :
 		}
 
 		private function load_dependencies() {
-			require_once( $this->get_path( 'models' ) . 'billplz.php' );
+      require_once( $this->get_path( 'models' ) . 'billplz.php' );
 
-			require_once( $this->get_path( 'gateway' ) . 'billplz.php' );
-			require_once( $this->get_path( 'gateway' ) . 'hooks.php' );
+      require_once( $this->get_path( 'gateway' ) . 'billplz.php' );
+      require_once( $this->get_path( 'gateway' ) . 'hooks.php' );
       require_once( $this->get_path( 'gateway' ) . 'listener.php' );
 
       require_once( $this->get_path( 'helpers' ) . 'billplz_api.php' );
