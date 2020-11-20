@@ -66,7 +66,6 @@ class ChBillplzDb
             $wpdb->query($sql);
 
             delete_option($db_opt_name);
-            error_log('gila');
         }
 
     }
