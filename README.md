@@ -12,7 +12,6 @@ Accept payment using Billplz.
 
 - Download: https://github.com/Billplz/Billplz-for-WP-Charitable/archive/master.zip
 - **Upload** & **Install** & **Activate** this plugin to your WordPress
-- 
 
 ## Configuration
 - Go to WordPress **Dashboard** >> **Charitable** >> **Settings** >> **Payment Gateways** >> **Billplz Gateway Settings**
